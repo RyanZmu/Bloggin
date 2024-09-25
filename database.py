@@ -45,6 +45,6 @@ class Comment(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey(column="users.id"))
     post_id: Mapped[int] = mapped_column(Integer, ForeignKey("blog_posts.id"))
-    comment_body: Mapped[str] = mapped_column(String(255), nullable=False)
+    comment_body: Mapped[str] = mapped_column(String, nullable=False)
     author = relationship("User", back_populates="comments")
     parent_post = relationship("BlogPosts", back_populates="post_comments")
