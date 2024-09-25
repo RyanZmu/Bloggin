@@ -31,7 +31,7 @@ app = Flask(__name__)
 ckeditor = CKEditor(app)
 
 # Load DB
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///posts.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI")
 # init app with extension
 db.init_app(app)
 
