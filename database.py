@@ -31,7 +31,7 @@ class BlogPosts(db.Model):
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey(column="users.id"))
     title: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     date: Mapped[str] = mapped_column(String(255), nullable=False)
-    body: Mapped[str] = mapped_column(String(255), nullable=False)
+    body: Mapped[str] = mapped_column(String, nullable=False)
     img_url: Mapped[str] = mapped_column(String(255), nullable=False)
     subtitle: Mapped[str] = mapped_column(String(255), nullable=False)
     # Create ref to the User object. the posts refers to the posts property of User class
