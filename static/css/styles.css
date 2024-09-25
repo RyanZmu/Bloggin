@@ -1,0 +1,52 @@
+body {
+    margin: 0;
+    background-color: #379777 !important;
+}
+
+.card-image {
+    width: 20vw;
+    height: 30vh;
+}
+
+nav {
+    background-color: #379777 !important;
+}
+
+.create-post {
+    background-color: #d3d3d3 !important;
+}
+
+.post {
+    background-color: #d3d3d3 !important;
+    color: black !important;
+}
+
+.banner {
+    background-color: #379777 !important;
+}
+
+form {
+    color: #F5F7F8 !important;
+}
+
+footer {
+    background-color: #379777 !important;
+    color: #F5F7F8;
+}
+
+.comment {
+    background-color: #379777 !important;
+}
+
+.post-container {
+    background-color: #45474B !important;
+}
+
+.post-body {
+    background-color: #F5F7F8 !important;
+}
+
+a {
+    text-decoration: none !important;
+    color: black !important;
+}

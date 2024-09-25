@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Blogger{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex justify-content-evenly align-items-center banner">
+    <h1 style="color:white">
+        Welcome to Blogger
+        {% if current_user.is_authenticated %}
+        , {{ current_user.username }}!
+        {% endif %}
+    </h1>
+    <img src="/static/images/hand.png" class="w-25 opacity-75">
+</div>
+    <div class="container-fluid">
+            {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+        <div class="row d-flex justify-content-center align-items-center flex-column">
+            <div class="col-8 card-container my-5 p-2">
+                {% for post in posts %}
+                    <div class="card post d-flex flex-row align-items-center justify-items-evenly justify-content-evenly p-3 mt-3 mb-3">
+                        <img class="card-image" src="{{ post['img_url'] }}">
+                        <div class="col p-3 d-flex flex-column">
+                        <a href="{{ url_for('get_blog_post', post_id=post['id']) }}">
+                            <h1 class="card-title"><strong>{{ post["title"] }}</strong></h1>
+                        </a>
+                            <hr>
+                            <div class="card-body">
+                                <p>
+                                By: <img src="https://gravatar.com/avatar/{{ post['author'].email_hash }}?d=retro&s=40" alt=""> <strong><em>{{ post["author"].username }}</em></strong>
+                                <br>
+                                {{ post["subtitle"] }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-1 d-flex flex-column">
+                            {% if current_user.is_authenticated and current_user.id == post["author_id"] or current_user.id == 1%}
+                                <a class="btn bg-danger text-white" href="{{ url_for('delete_post', post_id=post['id']) }}">Delete</a>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% if current_user.is_authenticated %}
+            <div class="col d-flex justify-content-end p-5">
+                <a href="{{ url_for('new_post') }}" class="btn create-post">Create New Post</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

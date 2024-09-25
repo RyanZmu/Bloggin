@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+
+{% block content %}
+{% if "/new-post" is in request.path or "/edit-post" is in request.path and current_user.is_authenticated %}
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+    <div class="row">
+        <div class="col">
+            <!--Change header for page-->
+            {% if 'edit-post' is in request.url %}
+            <h1>Edit Post</h1>
+            {% else %}
+            <h1>New Post</h1>
+            {% endif %}
+            {{ render_form(form)}}
+            <!--Call text editor-->
+            {{ ckeditor.load() }}
+            {{ ckeditor.config(name='body') }}
+        </div>
+    </div>
+</div>
+
+{% elif request.path == "/login" %}
+<div class="container p-5 d-flex align-items-center flex-column">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  <div class="row">
+    <div class="col">
+      <h2>Hello! Login in below!</h2>
+      {{ render_form(form) }}
+    </div>
+  </div>
+</div>
+
+{% elif request.path == "/register" %}
+<div class="container p-5 d-flex align-items-center flex-column">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+    {% endwith %}
+  <div class="row">
+    <div class="col">
+      <h2>Hello! Register a new account below!</h2>
+      {{ render_form(form) }}
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+{% endblock %}
+

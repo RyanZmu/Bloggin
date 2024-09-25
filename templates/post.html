@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+{% block title %} Posts {% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex banner justify-content-center align-items-center w-100 h-50 p-5">
+    <img src="{{ post['img_url'] }}" style="height:50vh">
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col d-flex flex-column align-items-center mb-5 p-5 post-container">
+            <div class="col-12 d-flex align-items-center flex-column post-body">
+                <h1>{{ post["title"] }}</h1>
+                <h3>{{ post["subtitle"]}}</h3>
+                <p>
+                {{ post["date"] }}
+                <!-- Add SAFE to render ckeditor body -->
+                <br>
+                Posted By: <img src="https://gravatar.com/avatar/{{ post['author'].email_hash }}?d=retro&s=40" alt=""> <em>{{ post["author"].username }}</em>
+                </p>
+                <div class="mt-5">
+                    {{ post["body"] | safe }}
+                </div>
+
+                <!-- Buttons for edit and back -->
+                <div class="col d-flex mb-5 mt-5">
+                    {% if current_user.is_authenticated and current_user.id == post["author_id"] or current_user.id == 1 %}
+                        <a class="btn bg-success text-white m-1" href="{{ url_for('edit_post', post_id=post['id']) }}">Edit</a>
+                    {% endif %}
+                    <a class="btn bg-success text-white m-1" href="{{ url_for('get_blog') }}">Back</a>
+                </div>
+                <!--Comments Section-->
+                <div>
+                    {{ render_form(comment_form) }}
+                    <!--Call text editor-->
+                    {{ ckeditor.load() }}
+                    {{ ckeditor.config(name='body') }}
+                </div>
+
+                <h3 class="m-3">Comments</h3>
+                {% for comment in post["post_comments"] %}
+                <div class="col-4 m-3 d-flex flex-column justify-contents-center align-items-center border border-success-subtle comment">
+                    <p>
+                        <img src="https://gravatar.com/avatar/{{ comment['author'].email_hash }}?d=retro&s=40" alt="">
+                        <strong>{{ comment["author"].username }}</strong>
+                    </p>
+                    {{ comment["comment_body"] | safe }}
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
