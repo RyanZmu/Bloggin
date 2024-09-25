@@ -118,7 +118,7 @@ def new_post():
         try:
             db.session.add(post)
             db.session.commit()
-        except exc.IntegrityError:
+        except db.exc.IntegrityError:
             # Add flash
             flash("Post with this title Exists")
             return redirect(url_for("get_blog"))
