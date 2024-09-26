@@ -245,10 +245,10 @@ def contact_page():
             from_addr=EMAIL,
             to_addrs=EMAIL,
             msg=f"Subject:Blog Message\n\n "
-                f"Name: {contact_form.data.get("name")}\n "
-                f"Email: {contact_form.data.get("email")}\n "
-                f"Phone: {contact_form.data.get("phone_num")}\n "
-                f"Message: {contact_form.data.get("message")}"
+                f"Name: {contact_form.data.get('name')}\n "
+                f"Email: {contact_form.data.get('email')}\n "
+                f"Phone: {contact_form.data.get('phone_num')}\n "
+                f"Message: {contact_form.data.get('message')}"
         )
         flash("Message Submitted! Thank You!")
         return redirect(url_for("contact_page"))
