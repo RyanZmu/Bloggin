@@ -238,7 +238,7 @@ def contact_page():
     contact_form = ContactForm()
 
     if contact_form.validate_on_submit():
-        connection = smtplib.SMTP(host=HOST)
+        connection = smtplib.SMTP(host=HOST, port=587)
         connection.starttls()
         connection.login(EMAIL, PASSWORD)
         connection.sendmail(
