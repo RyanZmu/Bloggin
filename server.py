@@ -250,6 +250,7 @@ def contact_page():
                 f"Phone: {contact_form.data.get('phone_num')}\n "
                 f"Message: {contact_form.data.get('message')}"
         )
+        connection.quit()
         flash("Message Submitted! Thank You!")
         return redirect(url_for("contact_page"))
 
