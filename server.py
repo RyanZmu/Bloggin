@@ -14,7 +14,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_ckeditor import CKEditor
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, LoginManager, login_required, current_user, logout_user
-from forms import NewPost, LoginForm, RegisterForm, CommentForm
+from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm
 from database import db, User, BlogPosts, Comment
 
 # Load environment vars
@@ -234,12 +234,10 @@ def get_about():
     return render_template("about.html")
 
 @app.route(rule="/contact", methods=["POST", "GET"])
-# @admin_only
 def contact_page():
-    if request.method == "GET":
-        return render_template("contact.html")
+    contact_form = ContactForm()
 
-    if request.method == "POST":
+    if contact_form.validate_on_submit():
         connection = smtplib.SMTP(host=HOST)
         connection.starttls()
         connection.login(EMAIL, PASSWORD)
@@ -247,12 +245,15 @@ def contact_page():
             from_addr=EMAIL,
             to_addrs=EMAIL,
             msg=f"Subject:Blog Message\n\n "
-                f"Name: {request.form['name']}\n "
-                f"Email: {request.form['email']}\n "
-                f"Phone: {request.form['telephone']}\n "
-                f"Message: {request.form['message']}"
+                f"Name: {contact_form.data.get("name")}\n "
+                f"Email: {contact_form.data.get("email")}\n "
+                f"Phone: {contact_form.data.get("phone_num")}\n "
+                f"Message: {contact_form.data.get("message")}"
         )
-        return render_template("contact.html")
+        flash("Message Submitted! Thank You!")
+        return redirect(url_for("contact_page"))
+
+    return render_template("contact.html", form=contact_form)
 
 
 if __name__ == '__main__':
