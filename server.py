@@ -238,7 +238,7 @@ def contact_page():
     contact_form = ContactForm()
 
     if contact_form.validate_on_submit():
-        db.session.expire_all()
+        db.engine.dispose()
         connection = smtplib.SMTP(host=HOST)
         connection.starttls()
         connection.login(EMAIL, PASSWORD)
