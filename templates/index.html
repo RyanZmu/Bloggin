@@ -64,7 +64,7 @@
             <!-- News Summary -->
             {% for article in news %}
                 {% if article['description'] != None and article['urlToImage'] != None %}
-                    <div class="col-lg-2 col-md-2 col-sm-12 card news-card">
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 card news-card">
                         <img src="{{ article['urlToImage'] }}" class="card-img-top">
                         <div class="card-body">
                             <p class="card-text">
@@ -79,15 +79,15 @@
             {% endfor %}
         </div>
 </div>
-    <div class="row weather-row">
+    <div class="row weather-row d-flex">
             <h2 class="news-header">Weather near you</h2>
             <strong class="text-white">7-Day: Day/Night</strong>
-            <div class="col d-flex flex-wrap align-content-center justify-content-center">
+            <div class="col d-flex flex-wrap align-content-center justify-content-center align-content-center">
                 <!-- Weather Summary-->
                 {% for weather in forecast %}
-                    <div class="col-lg-2 col-md-12 col-sm-12 card rounded weather-card d-flex flex-column align-items-center">
-                        <img src="{{ weather['icon'] }}" class="card-image-top h-50 w-50">
-                        <div class="card-body d-flex align-items-start flex-wrap">
+                    <div class="col-xl-2 col-lg-2 col-md-8 col-sm-6 card rounded weather-card">
+                        <img src="{{ weather['icon'] }}" class="card-image-top">
+                        <div class="card-body d-flex align-content-center align-items-center">
                             <p class="card-text">
                                 <strong>{{ weather["name"] }}</strong>
                                 <br>
