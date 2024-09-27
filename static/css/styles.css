@@ -21,6 +21,11 @@ nav {
     color: black !important;
 }
 
+.post a {
+    color: black !important;
+    text-decoration: none !important;
+}
+
 .banner {
     background-color: #379777 !important;
 }
@@ -46,7 +51,28 @@ footer {
     background-color: #F5F7F8 !important;
 }
 
-a {
-    text-decoration: none !important;
-    color: black !important;
+.about-container {
+    color: white !important;
+}
+
+.about-container a {
+    color: white !important;
+}
+
+.login-container, .contact-container, .register-container {
+    color: white !important;
+}
+
+.news-card {
+    margin: 10px;
+    background-color: #d3d3d3 !important;
+}
+
+.news-header {
+    color: white;
+}
+
+.weather-card {
+    margin: 5px;
+    background-color: #d3d3d3 !important;
 }

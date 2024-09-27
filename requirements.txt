@@ -22,6 +22,7 @@ Flask-WTF==1.2.1
 frozenlist==1.4.1
 geographiclib==2.0
 geopy==2.4.1
+geocoder==1.38.1
 greenlet==3.0.3
 gunicorn==21.2.0
 h11==0.14.0
