@@ -73,6 +73,8 @@ def load_user(user_id):
 def get_blog():
     all_blog_posts = db.session.execute(db.select(BlogPosts)).scalars().all()
 
+    # Move these API calls out of the homepage route and instead call from a separate function every 30 or so mins
+    # Feed that data into the route instead of constantly calling when visiting the route
     # Call news API for current headlines
     news_endpoint = "https://newsapi.org/v2/top-headlines"
     news_params = {

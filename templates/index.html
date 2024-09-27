@@ -20,10 +20,10 @@
             {% endif %}
         {% endwith %}
         <div class="row d-flex justify-content-center align-items-center flex-column">
-            <div class="col-8 card-container my-5 p-2">
+            <div class="col-lg-8 col-md-8 col-sm-12 card-container my-5 p-2">
                 {% for post in posts %}
                     <div class="card post d-flex flex-row align-items-center justify-items-evenly justify-content-evenly p-3 mt-3 mb-3">
-                        <img class="card-image" src="{{ post['img_url'] }}">
+                        <img class="w-25" src="{{ post['img_url'] }}">
                         <div class="col p-3 d-flex flex-column">
                         <a href="{{ url_for('get_blog_post', post_id=post['id']) }}">
                             <h1 class="card-title"><strong>{{ post["title"] }}</strong></h1>
@@ -73,7 +73,7 @@
                                 {{ article["description"] }}
                             </p>
                         </div>
-                        <a class="btn btn-success" href="{{article['url']}}">Read Story</a>
+                        <a class="btn btn-success" href="{{article['url']}}" target="_blank">Read Story</a>
                     </div>
                 {% endif %}
             {% endfor %}
