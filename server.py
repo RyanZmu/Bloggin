@@ -12,10 +12,14 @@ import smtplib
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 from flask_ckeditor import CKEditor
+from jwt.utils import force_bytes
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, LoginManager, login_required, current_user, logout_user
 from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm
 from database import db, User, BlogPosts, Comment
+import requests
+import geocoder
+
 
 # Load environment vars
 load_dotenv()
@@ -23,6 +27,8 @@ load_dotenv()
 PASSWORD = os.environ.get("EMAIL_PASSWORD")
 EMAIL = os.environ.get("EMAIL")
 SECRET_KEY = os.environ.get("WTF_CSRF_SECRET_KEY")
+NEWS_API_KEY = os.environ.get("NEWS_API_KEY")
+OW_API_KEY = os.environ.get("OW_API_KEY")
 HOST = "smtp.gmail.com"
 
 app = Flask(__name__)
@@ -66,7 +72,43 @@ def load_user(user_id):
 @app.route("/")
 def get_blog():
     all_blog_posts = db.session.execute(db.select(BlogPosts)).scalars().all()
-    return render_template(template_name_or_list="index.html", posts=all_blog_posts)
+
+    # Call news API for current headlines
+    news_endpoint = "https://newsapi.org/v2/top-headlines"
+    news_params = {
+        "apiKey": NEWS_API_KEY,
+        "pageSize": 10,
+        "country": "us"
+    }
+    news_request = requests.get(news_endpoint, params=news_params)
+    news_data = news_request.json()
+
+    news_articles = news_data["articles"]
+
+    # Call Weather API for current weather
+    # First get user location - lat and long to find forecast
+    user_coords = geocoder.ip('me')
+
+    # Weather based on location
+    weather_endpoint = f"https://api.weather.gov/points/{user_coords.lat},{user_coords.lng}"
+
+    weather_request = requests.get(weather_endpoint)
+    weather_data = weather_request.json()
+
+    # Endpoint for forecast based on previous call for weather location
+    forecast_endpoint = weather_data["properties"]["forecast"]
+
+    forecast_request = requests.get(forecast_endpoint)
+    forecast_data = forecast_request.json()
+
+    forecast_data_by_day = forecast_data["properties"]["periods"]
+
+    return render_template(
+        template_name_or_list="index.html",
+        posts=all_blog_posts,
+        news=news_articles,
+        forecast=forecast_data_by_day
+    )
 
 
 @app.route(rule="/posts/<post_id>", methods=["GET", "POST"])

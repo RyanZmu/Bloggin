@@ -29,7 +29,7 @@
 </div>
 
 {% elif request.path == "/login" %}
-<div class="container p-5 d-flex align-items-center flex-column">
+<div class="container login-container p-5 d-flex align-items-center flex-column">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for message in messages %}
@@ -46,7 +46,7 @@
 </div>
 
 {% elif request.path == "/register" %}
-<div class="container p-5 d-flex align-items-center flex-column">
+<div class="container register-container p-5 d-flex align-items-center flex-column">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
           {% for message in messages %}

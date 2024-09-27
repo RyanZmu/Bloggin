@@ -6,19 +6,19 @@
     <h1 style="color:white">
         Welcome to Bloggin'
         {% if current_user.is_authenticated %}
-        , {{ current_user.username }}!
+            , {{ current_user.username }}!
         {% endif %}
     </h1>
     <img src="/static/images/hand.png" class="w-25 opacity-75">
 </div>
     <div class="container-fluid">
-            {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            {% endif %}
+        {% endwith %}
         <div class="row d-flex justify-content-center align-items-center flex-column">
             <div class="col-8 card-container my-5 p-2">
                 {% for post in posts %}
@@ -54,4 +54,53 @@
             </div>
         {% endif %}
     </div>
+
+<!--News and Weather at bottom of page-->
+<div class="container-fluid news-weather-container">
+    <div class="row news-row d-flex">
+        <h1 class="news-header">Catch up on things...</h1>
+        <h2 class="news-header">Current US Headlines</h2>
+        <div class="col news-col d-flex flex-wrap justify-content-center">
+            <!-- News Summary -->
+            {% for article in news %}
+                {% if article['description'] != None and article['urlToImage'] != None %}
+                    <div class="col-lg-2 col-md-2 col-sm-12 card news-card">
+                        <img src="{{ article['urlToImage'] }}" class="card-img-top">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>{{ article["title"] }}</strong>
+                                <br><br>
+                                {{ article["description"] }}
+                            </p>
+                        </div>
+                        <a class="btn btn-success" href="{{article['url']}}">Read Story</a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+</div>
+    <div class="row weather-row">
+            <h2 class="news-header">Weather near you</h2>
+            <strong class="text-white">7-Day: Day/Night</strong>
+            <div class="col d-flex flex-wrap align-content-center justify-content-center">
+                <!-- Weather Summary-->
+                {% for weather in forecast %}
+                    <div class="col-lg-2 col-md-2 col-sm-2 card rounded weather-card d-flex flex-column align-items-center">
+                        <img src="{{ weather['icon'] }}" class="card-image-top h-50 w-50">
+                        <div class="card-body d-flex align-items-start flex-wrap">
+                            <p class="card-text">
+                                <strong>{{ weather["name"] }}</strong>
+                                <br>
+                                <strong>{{ weather["shortForecast"] }}</strong>
+                                <br>
+                                <em>{{ weather["temperature"] }} {{ weather["temperatureUnit"] }}</em>
+                                <br>
+                                {{ weather["detailedForecast"] }}
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+    </div>
+</div>
 {% endblock %}
