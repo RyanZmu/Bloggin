@@ -20,7 +20,6 @@ from database import db, User, BlogPosts, Comment
 import requests
 import geocoder
 
-
 # Load environment vars
 load_dotenv()
 
