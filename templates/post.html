@@ -3,11 +3,9 @@
 {% block title %} Posts {% endblock %}
 
 {% block content %}
-<div class="container-fluid d-flex banner justify-content-center align-items-center w-100 h-50 p-5">
-    <img src="{{ post['img_url'] }}" style="height:50vh">
-</div>
-<div class="container-fluid">
+<div class="container">
     <div class="row">
+        <img src="{{ post['img_url'] }}" class="post-image p-5">
         <div class="col d-flex flex-column align-items-center mb-5 p-5 post-container">
             <div class="col-12 d-flex align-items-center flex-column post-body">
                 <h1>{{ post["title"] }}</h1>
