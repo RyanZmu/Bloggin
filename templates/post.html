@@ -3,11 +3,9 @@
 {% block title %} Posts {% endblock %}
 
 {% block content %}
-<div class="container-fluid d-flex banner justify-content-center align-items-center w-100 h-50 p-5">
-    <img src="{{ post['img_url'] }}" style="height:50vh">
-</div>
-<div class="container-fluid">
+<div class="container">
     <div class="row">
+        <img src="{{ post['img_url'] }}" class="post-image p-5">
         <div class="col d-flex flex-column align-items-center mb-5 p-5 post-container">
             <div class="col-12 d-flex align-items-center flex-column post-body">
                 <h1>{{ post["title"] }}</h1>
@@ -16,7 +14,7 @@
                 {{ post["date"] }}
                 <!-- Add SAFE to render ckeditor body -->
                 <br>
-                Posted By: <img src="https://gravatar.com/avatar/{{ post['author'].email_hash }}?d=retro&s=40" alt=""> <em>{{ post["author"].username }}</em>
+                Posted By: <img src="https://gravatar.com/avatar/{{ post['author'].email_hash }}?d=retro&s=40" alt="user_avatar"> <em>{{ post["author"].username }}</em>
                 </p>
                 <div class="mt-5">
                     {{ post["body"] | safe }}
@@ -29,6 +27,7 @@
                     {% endif %}
                     <a class="btn bg-success text-white m-1" href="{{ url_for('get_blog') }}">Back</a>
                 </div>
+
                 <!--Comments Section-->
                 <div>
                     {{ render_form(comment_form) }}
@@ -36,7 +35,6 @@
                     {{ ckeditor.load() }}
                     {{ ckeditor.config(name='body') }}
                 </div>
-
                 <h3 class="m-3">Comments</h3>
                 {% for comment in post["post_comments"] %}
                 <div class="col-4 m-3 d-flex flex-column justify-contents-center align-items-center border border-success-subtle comment">

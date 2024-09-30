@@ -3,6 +3,13 @@ body {
     background-color: #379777 !important;
 }
 
+.abril-fatface-regular {
+  font-family: "Abril Fatface", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
 .card-image {
     width: 20vw;
     height: 30vh;
@@ -24,6 +31,11 @@ nav {
 .post a {
     color: black !important;
     text-decoration: none !important;
+}
+
+.post-image {
+    max-height:50vh;
+    object-fit: contain;
 }
 
 .banner {

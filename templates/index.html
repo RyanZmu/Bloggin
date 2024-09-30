@@ -22,7 +22,7 @@
         <div class="row d-flex justify-content-center align-items-center flex-column">
             <div class="col-lg-8 col-md-8 col-sm-12 card-container my-5 p-2">
                 {% for post in posts %}
-                    <div class="card post d-flex flex-row align-items-center justify-items-evenly justify-content-evenly p-3 mt-3 mb-3">
+                    <div class="card post d-flex flex-row align-items-center justify-content-evenly p-3 mt-3 mb-3">
                         <img class="w-25" src="{{ post['img_url'] }}">
                         <div class="col p-3 d-flex flex-column">
                         <a href="{{ url_for('get_blog_post', post_id=post['id']) }}">
@@ -37,12 +37,9 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="col-1 d-flex flex-column">
                             {% if current_user.is_authenticated and current_user.id == post["author_id"] or current_user.id == 1%}
                                 <a class="btn bg-danger text-white" href="{{ url_for('delete_post', post_id=post['id']) }}">Delete</a>
                             {% endif %}
-                        </div>
-
                     </div>
                 {% endfor %}
             </div>
