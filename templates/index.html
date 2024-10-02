@@ -54,7 +54,7 @@
 
 <!--News and Weather at bottom of page-->
 <div class="container-fluid news-weather-container">
-    <div class="row news-row d-flex">
+    <div class="row news-row">
         <h1 class="news-header">Catch up on things...</h1>
         <h2 class="news-header">Current US Headlines</h2>
         <div class="col news-col d-flex flex-wrap justify-content-center">
@@ -75,16 +75,17 @@
                 {% endif %}
             {% endfor %}
         </div>
-</div>
-    <div class="row weather-row d-flex">
-            <h2 class="news-header">Weather near you</h2>
+    </div>
+        <div class="row weather-row justify-content-center">
+            <h2 class="weather-header">Weather near {{ location["city"] }}, {{ location["state"] }}</h2>
+<!--            <strong>Change Location: </strong>-->
             <strong class="text-white">7-Day: Day/Night</strong>
-            <div class="col d-flex flex-wrap align-content-center justify-content-center align-content-center">
+            <div class="col d-flex flex-wrap">
                 <!-- Weather Summary-->
                 {% for weather in forecast %}
-                    <div class="col-xl-2 col-lg-2 col-md-8 col-sm-6 card rounded weather-card">
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 flex-grow-1 card rounded weather-card">
                         <img src="{{ weather['icon'] }}" class="card-image-top">
-                        <div class="card-body d-flex align-content-center align-items-center">
+                        <div class="card-body align-content-center align-items-center">
                             <p class="card-text">
                                 <strong>{{ weather["name"] }}</strong>
                                 <br>
@@ -98,6 +99,6 @@
                     </div>
                 {% endfor %}
             </div>
-    </div>
+        </div>
 </div>
 {% endblock %}
