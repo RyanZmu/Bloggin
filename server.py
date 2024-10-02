@@ -3,7 +3,7 @@ import hashlib
 from urllib.parse import urlencode
 from os import environ
 from typing import List
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap5
 from dotenv import load_dotenv
@@ -18,6 +18,7 @@ from flask_login import login_user, LoginManager, login_required, current_user, 
 from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm
 from database import db, User, BlogPosts, Comment
 import requests
+from random import randint
 import geocoder
 
 # Load environment vars
@@ -63,6 +64,63 @@ login_manager.init_app(app)
 #         if current_user.id == 1:
 #     return inner
 
+def api_calls():
+    # TODO: Periodically call the News and Weather API for updates, store the updates instead of calling on routes
+
+    # Call news API for current headlines
+    news_endpoint = "https://newsapi.org/v2/top-headlines"
+    news_params = {
+        "apiKey": NEWS_API_KEY,
+        "pageSize": 10,
+        "country": "us"
+    }
+
+    news_request = requests.get(news_endpoint, params=news_params)
+    news_data = news_request.json()
+
+    news_articles = news_data["articles"]
+
+    # Call Weather API for current weather
+    # First get user location - lat and long to find forecast
+    user_coords = geocoder.ip((request.environ['REMOTE_ADDR']))
+
+    # Weather based on location
+    weather_endpoint = f"https://api.weather.gov/points/{user_coords.lat},{user_coords.lng}"
+
+    weather_request = requests.get(weather_endpoint)
+    weather_data = weather_request.json()
+    print(weather_data)
+
+    location_details = weather_data["properties"]["relativeLocation"]["properties"]
+    city = location_details["city"]
+    state = location_details["state"]
+
+    # Endpoint for forecast based on previous call for weather location
+    forecast_endpoint = weather_data["properties"]["forecast"]
+
+    forecast_request = requests.get(forecast_endpoint)
+    forecast_data = forecast_request.json()
+
+    print(location_details)
+
+    forecast_data_by_day = forecast_data["properties"]["periods"]
+
+
+    user_info = geocoder.ipinfo()
+
+    api_data = {
+        "news": news_articles,
+        "weather": forecast_data_by_day,
+        "location": {
+            "city": city,
+            "state": state
+        },
+        "updated_at": datetime.now()
+    }
+
+    print(api_data)
+    return api_data
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.get_or_404(User, user_id)
@@ -72,43 +130,14 @@ def load_user(user_id):
 def get_blog():
     all_blog_posts = db.session.execute(db.select(BlogPosts)).scalars().all()
 
-    # Move these API calls out of the homepage route and instead call from a separate function every 30 or so mins
-    # Feed that data into the route instead of constantly calling when visiting the route
-    # Call news API for current headlines
-    news_endpoint = "https://newsapi.org/v2/top-headlines"
-    news_params = {
-        "apiKey": NEWS_API_KEY,
-        "pageSize": 10,
-        "country": "us"
-    }
-    news_request = requests.get(news_endpoint, params=news_params)
-    news_data = news_request.json()
-
-    news_articles = news_data["articles"]
-
-    # Call Weather API for current weather
-    # First get user location - lat and long to find forecast
-    user_coords = geocoder.ip('me')
-
-    # Weather based on location
-    weather_endpoint = f"https://api.weather.gov/points/{user_coords.lat},{user_coords.lng}"
-
-    weather_request = requests.get(weather_endpoint)
-    weather_data = weather_request.json()
-
-    # Endpoint for forecast based on previous call for weather location
-    forecast_endpoint = weather_data["properties"]["forecast"]
-
-    forecast_request = requests.get(forecast_endpoint)
-    forecast_data = forecast_request.json()
-
-    forecast_data_by_day = forecast_data["properties"]["periods"]
+    api_results = api_calls()
 
     return render_template(
         template_name_or_list="index.html",
         posts=all_blog_posts,
-        news=news_articles,
-        forecast=forecast_data_by_day
+        news=api_results["news"],
+        forecast=api_results["weather"],
+        location=api_results["location"]
     )
 
 

@@ -75,16 +75,12 @@ footer {
     color: white !important;
 }
 
-.news-card {
-    margin: 10px;
+.news-card, .weather-card {
+    margin: 8px;
+    padding: 5px;
     background-color: #d3d3d3 !important;
 }
 
-.news-header {
+.news-header, .weather-header {
     color: white;
-}
-
-.weather-card {
-    margin: 5px;
-    background-color: #d3d3d3 !important;
 }

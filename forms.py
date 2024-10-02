@@ -36,3 +36,6 @@ class ContactForm(FlaskForm):
     phone_num = StringField(label="Phone Number", validators=[DataRequired()])
     message = StringField(label="Message", validators=[DataRequired()])
     submit = SubmitField(label="Submit!", render_kw={'btn-primary': 'True'})
+
+# class LocationSubmit(FlaskForm):
+#     location =
