@@ -26,6 +26,8 @@ nav {
 .post {
     background-color: #d3d3d3 !important;
     color: black !important;
+    max-height: 30vh;
+    min-height: 30vh;
 }
 
 .post a {

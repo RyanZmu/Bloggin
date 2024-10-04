@@ -55,9 +55,11 @@
 
 <!--News and Weather at bottom of page-->
 <div class="container-fluid news-weather-container">
-    <div class="row news-row">
-        <h1 class="news-header">Catch up on things...</h1>
-        <h2 class="news-header">Current US Headlines</h2>
+    <div class="row news">
+        <section class="d-flex flex-column align-items-center">
+            <h1 class="news-header">Catch up on things...</h1>
+            <h2 class="news-header">Current US Headlines</h2>
+        </section>
         <div class="col news-col d-flex flex-wrap justify-content-center">
             <!-- News Summary -->
             {% for article in news %}
@@ -78,9 +80,11 @@
         </div>
     </div>
         <div class="row weather-row justify-content-center">
-            <h2 class="weather-header">Weather near {{ location["city"] }}, {{ location["state"] }}</h2>
+            <section class="col-lg-4 col-md-8 col-sm-8">
+                <h2 class="weather-header">Weather near {{ location["city"] }}, {{ location["state"] }}</h2>
                 <!-- Render location form -->
                 {{ render_form(form) }}
+            </section>
             <strong class="text-white">7-Day: Day/Night</strong>
             <div class="col d-flex flex-wrap">
                 <!-- Weather Summary-->
