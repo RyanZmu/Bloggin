@@ -54,7 +54,7 @@
     </div>
 
 <!--News and Weather at bottom of page-->
-<div class="container-fluid news-weather-container">
+<div class="container-fluid news-container">
     <div class="row news">
         <section class="d-flex flex-column align-items-center">
             <h1 class="news-header">Catch up on things...</h1>
@@ -79,32 +79,55 @@
             {% endfor %}
         </div>
     </div>
-        <div class="row weather-row justify-content-center">
-            <section class="col-lg-4 col-md-8 col-sm-8">
-                <h2 class="weather-header">Weather near {{ location["city"] }}, {{ location["state"] }}</h2>
-                <!-- Render location form -->
-                {{ render_form(form) }}
-            </section>
-            <strong class="text-white">7-Day: Day/Night</strong>
-            <div class="col d-flex flex-wrap">
-                <!-- Weather Summary-->
-                {% for weather in forecast %}
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 flex-grow-1 card rounded weather-card">
-                        <img src="{{ weather['icon'] }}" class="card-image-top">
-                        <div class="card-body align-content-center align-items-center">
-                            <p class="card-text">
-                                <strong>{{ weather["name"] }}</strong>
-                                <br>
-                                <strong>{{ weather["shortForecast"] }}</strong>
-                                <br>
-                                <em>{{ weather["temperature"] }} {{ weather["temperatureUnit"] }}</em>
-                                <br>
-                                {{ weather["detailedForecast"] }}
-                            </p>
-                        </div>
-                    </div>
-                {% endfor %}
+</div>
+
+<div class="container weather-container">
+    <div class="row weather-row justify-content-center">
+
+        <section class="col-lg-4 col-md-8 col-sm-8">
+            <h2 class="weather-header">Weather near {{ location["city"] }}, {{ location["state"] }}</h2>
+            <!-- Render location form -->
+            {{ render_form(form) }}
+        </section>
+        <strong class="text-white">7-Day: Day/Night</strong>
+
+        <div class="col d-flex weather-column">
+            <!-- Weather Summary-->
+            <div class="col-4 card weather-card">
+                <strong>Current Conditions</strong>
+                <img src="{{ forecast[0]['icon'] }}" class="card-image-top">
+                <div class="card-body align-content-center align-items-center">
+                    <p class="card-text">
+                        <strong>{{ forecast[0]["name"] }}</strong>
+                        <br>
+                        <strong>{{ forecast[0]["shortForecast"] }}</strong>
+                        <br>
+                        <em>{{ forecast[0]["temperature"] }} {{ forecast[0]["temperatureUnit"] }}</em>
+                        <br>
+                        {{ forecast[0]["detailedForecast"] }}
+                    </p>
+                </div>
             </div>
+
+            {% for weather in forecast %}
+                {% if forecast.index(weather) != 0 %}
+                <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 card rounded weather-card">
+                    <img src="{{ weather['icon'] }}" class="card-image-top">
+                    <div class="card-body align-content-center align-items-center">
+                        <p class="card-text">
+                            <strong>{{ weather["name"] }}</strong>
+                            <br>
+                            <strong>{{ weather["shortForecast"] }}</strong>
+                            <br>
+                            <em>{{ weather["temperature"] }} {{ weather["temperatureUnit"] }}</em>
+                            <br>
+                            {{ weather["detailedForecast"] }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
         </div>
+    </div>
 </div>
 {% endblock %}
