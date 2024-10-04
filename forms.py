@@ -37,5 +37,6 @@ class ContactForm(FlaskForm):
     message = StringField(label="Message", validators=[DataRequired()])
     submit = SubmitField(label="Submit!", render_kw={'btn-primary': 'True'})
 
-# class LocationSubmit(FlaskForm):
-#     location =
+class LocationSubmit(FlaskForm):
+    location = StringField(label="Enter your City, State (Finds nearest weather station)", validators=[DataRequired()])
+    submit = SubmitField(label="Get Weather", render_kw={'btn-primary': 'True'})

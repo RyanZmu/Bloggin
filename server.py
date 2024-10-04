@@ -4,6 +4,8 @@ from urllib.parse import urlencode
 from os import environ
 from typing import List
 from datetime import datetime, timedelta
+
+import geocoder
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap5
 from dotenv import load_dotenv
@@ -15,11 +17,11 @@ from flask_ckeditor import CKEditor
 from jwt.utils import force_bytes
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, LoginManager, login_required, current_user, logout_user
-from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm
+from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm, LocationSubmit
 from database import db, User, BlogPosts, Comment
 import requests
 from random import randint
-import geocoder
+import geopy
 
 # Load environment vars
 load_dotenv()
@@ -64,9 +66,8 @@ login_manager.init_app(app)
 #         if current_user.id == 1:
 #     return inner
 
-def api_calls():
-    # TODO: Periodically call the News and Weather API for updates, store the updates instead of calling on routes
-
+def api_calls(location):
+    # TODO: Periodically call the News and Weather API for updates, cache the updates instead of calling on routes
     # Call news API for current headlines
     news_endpoint = "https://newsapi.org/v2/top-headlines"
     news_params = {
@@ -78,15 +79,48 @@ def api_calls():
     news_request = requests.get(news_endpoint, params=news_params)
     news_data = news_request.json()
 
+    print(news_data)
     news_articles = news_data["articles"]
 
     # Call Weather API for current weather
     # First get user location - lat and long to find forecast
-    user_coords = geocoder.ip((request.environ['REMOTE_ADDR']))
+    # TODO: DRY up the weather logic and make it flow better
 
-    # Weather based on location
-    weather_endpoint = f"https://api.weather.gov/points/{user_coords.lat},{user_coords.lng}"
+    weather_endpoint = ""
 
+    if request.method == "GET":
+        # Initially grab weather based on server's location
+        user_coords = geocoder.ip("me")
+        # Weather based on server
+        weather_endpoint = f"https://api.weather.gov/points/{user_coords.lat},{user_coords.lng}"
+
+    if location.validate_on_submit():
+        # Allow user to enter a city/state after initial load
+        try:
+            # Geolocation - NOM API Call
+            nom = geopy.geocoders.Nominatim(user_agent="blogger_app")
+            user_coords = nom.geocode(
+                query=f"{location.data.get('location')}",
+                addressdetails=True,
+                geometry="geojson",
+                extratags=True
+            )
+        except requests.exceptions.MissingSchema:
+            # If API call failed - default back to server's location
+            user_coords = geocoder.ip("me")
+            # Weather based on server
+            weather_endpoint = f"https://api.weather.gov/points/{user_coords.lat},{user_coords.lng}"
+        else:
+            if user_coords is not None:
+                print("Location found")
+                weather_endpoint = f"https://api.weather.gov/points/{user_coords.latitude},{user_coords.longitude}"
+            else:
+                # If API call is successful but location is invalid - default back to server's location
+                user_coords = geocoder.ip("me")
+                # Weather based on server
+                weather_endpoint = f"https://api.weather.gov/points/{user_coords.lat},{user_coords.lng}"
+
+    # Make Weather API request and output the data
     weather_request = requests.get(weather_endpoint)
     weather_data = weather_request.json()
     print(weather_data)
@@ -105,9 +139,8 @@ def api_calls():
 
     forecast_data_by_day = forecast_data["properties"]["periods"]
 
-
-    user_info = geocoder.ipinfo()
-
+    # Combine data from both api calls
+    # TODO: Consider breaking these API calls out into separate function calls possibly
     api_data = {
         "news": news_articles,
         "weather": forecast_data_by_day,
@@ -126,18 +159,23 @@ def load_user(user_id):
     return db.get_or_404(User, user_id)
 
 # Post Routes
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def get_blog():
     all_blog_posts = db.session.execute(db.select(BlogPosts)).scalars().all()
 
-    api_results = api_calls()
+    location_form = LocationSubmit()
+
+    api_results = api_calls(location_form)
+
+    print(api_results)
 
     return render_template(
         template_name_or_list="index.html",
         posts=all_blog_posts,
         news=api_results["news"],
         forecast=api_results["weather"],
-        location=api_results["location"]
+        location=api_results["location"],
+        form=location_form
     )
 
 

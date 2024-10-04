@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
 {% block title %}Bloggin'{% endblock %}
 
 {% block content %}
@@ -78,7 +79,8 @@
     </div>
         <div class="row weather-row justify-content-center">
             <h2 class="weather-header">Weather near {{ location["city"] }}, {{ location["state"] }}</h2>
-<!--            <strong>Change Location: </strong>-->
+                <!-- Render location form -->
+                {{ render_form(form) }}
             <strong class="text-white">7-Day: Day/Night</strong>
             <div class="col d-flex flex-wrap">
                 <!-- Weather Summary-->
