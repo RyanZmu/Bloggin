@@ -26,6 +26,8 @@ nav {
 .post {
     background-color: #d3d3d3 !important;
     color: black !important;
+/*    max-height: 30vh;*/
+/*    min-height: 30vh;*/
 }
 
 .post a {
@@ -75,8 +77,20 @@ footer {
     color: white !important;
 }
 
-.news-card, .weather-card {
+.news-card {
     margin: 8px;
+    padding: 5px;
+    background-color: #d3d3d3 !important;
+}
+
+.weather-column {
+    overflow: scroll;
+    background-color: #379777 !important;
+    max-height: 50vh;
+}
+
+.weather-card {
+    margin: 3px;
     padding: 5px;
     background-color: #d3d3d3 !important;
 }
