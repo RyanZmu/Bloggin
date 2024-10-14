@@ -294,7 +294,6 @@ def login_form():
 
     if form.validate_on_submit():
         user = db.session.execute(db.select(User).where(User.email == user_email)).scalar()
-
         if user is not None:
             if check_password_hash(user.password, user_password):
                 login_user(user)
