@@ -30,6 +30,10 @@ class CommentForm(FlaskForm):
     comment = CKEditorField(label="Comment", validators=[DataRequired()])
     submit = SubmitField(label="Submit Comment!", render_kw={'btn-primary': 'True'})
 
+class BioForm(FlaskForm):
+    bio = CKEditorField(label="Edit Bio", validators=[DataRequired()])
+    submit = SubmitField(label="Submit!", render_kw={'btn-primary': 'True'})
+
 class ContactForm(FlaskForm):
     name = StringField(label="Name", validators=[DataRequired()])
     email = StringField(label='Email', validators=[DataRequired(), Email()])

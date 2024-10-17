@@ -17,10 +17,13 @@ from flask_ckeditor import CKEditor
 from jwt.utils import force_bytes
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, LoginManager, login_required, current_user, logout_user
-from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm, LocationSubmit
+from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm, LocationSubmit, BioForm
 from database import db, User, BlogPosts, Comment
 import requests
 from random import randint
+from sqlalchemy import exc, insert, text, create_engine
+import time
+import psycopg2
 import geopy
 
 # Load environment vars
@@ -40,12 +43,14 @@ ckeditor = CKEditor(app)
 
 # Load DB
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_URI", "sqlite:///posts.db")
+
 # init app with extension
 db.init_app(app)
 
 # Create the db tables
 with app.app_context():
     db.create_all()
+
 
 # Enable CSRF for flask forms
 csrf = CSRFProtect(app)
@@ -284,7 +289,7 @@ def delete_post(post_id):
     return redirect(url_for("get_blog"))
 
 
-# Login Routes
+# Login/User Routes
 @app.route(rule="/login", methods=["GET", "POST"])
 def login_form():
     form = LoginForm()
@@ -297,9 +302,18 @@ def login_form():
         if user is not None:
             if check_password_hash(user.password, user_password):
                 login_user(user)
+
+                # Check for profile pic - ensures a str value and null is present
+                if type(user.profile_pic) is not str:
+                    user.profile_pic = f"https://gravatar.com/avatar/{ user.email_hash }?d=retro&s=40"
+
+                db.session.commit()
+
                 return redirect(url_for("get_blog"))
         else:
             flash("Invalid email or Password!")
+
+
 
     return render_template(template_name_or_list="forms.html", form=form)
 
@@ -324,6 +338,9 @@ def register_user():
             username=form.data.get("username")
         )
 
+        # Add a default profile pic after email is hashed
+        new_user.profile_pic = f"https://gravatar.com/avatar/{ new_user.email_hash }?d=retro&s=40"
+
         try:
             db.session.add(new_user)
             db.session.commit()
@@ -332,9 +349,42 @@ def register_user():
             flash("User exists with this email!")
         else:
             login_user(new_user)
+            # Give User a profile pic
+            # new_user.profile_pic = "https://gravatar.com/avatar/{{ new_user.email_hash }}?d=retro&s=40"
+
+            # Wait 2 seconds, show success message and then redirect to home
+            # flash("Welcome!")
+            # time.sleep(2)
             return redirect(url_for("get_blog"))
 
     return render_template(template_name_or_list="forms.html", form=form)
+
+# User Profile routes
+@app.route(rule="/profile/<user_id>", methods=["GET", "POST"])
+def get_profile(user_id):
+    user_requested = db.session.execute(db.select(User).where(User.id == user_id)).scalar()
+    # print(user_requested.username)
+
+    # Get user's posts and post count
+    user_posts = db.session.execute(db.select(BlogPosts).where(BlogPosts.author_id == user_requested.id)).scalars().all()
+    # print(user_posts)
+    post_count = len(user_posts)
+
+    # User options
+    # Set bio
+    bio_form = BioForm()
+
+    if bio_form.validate_on_submit():
+        user_requested.user_bio = bio_form.data.get("bio")
+        db.session.commit()
+
+
+    return render_template("profile.html",
+                           user=user_requested,
+                           user_posts=user_posts,
+                           post_count=post_count,
+                           bio_form=bio_form
+                           )
 
 
 # Misc routes
@@ -347,10 +397,10 @@ def contact_page():
     contact_form = ContactForm()
 
     if contact_form.validate_on_submit():
-        connection = smtplib.SMTP(host=HOST, port=587)
-        connection.starttls()
-        connection.login(EMAIL, PASSWORD)
-        connection.sendmail(
+        email_conn = smtplib.SMTP(host=HOST, port=587)
+        email_conn.starttls()
+        email_conn.login(EMAIL, PASSWORD)
+        email_conn.sendmail(
             from_addr=EMAIL,
             to_addrs=EMAIL,
             msg=f"Subject:Blog Message\n\n "
@@ -359,7 +409,7 @@ def contact_page():
                 f"Phone: {contact_form.data.get('phone_num')}\n "
                 f"Message: {contact_form.data.get('message')}"
         )
-        connection.quit()
+        email_conn.quit()
         flash("Message Submitted! Thank You!")
         return redirect(url_for("contact_page"))
 
