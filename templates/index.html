@@ -32,7 +32,10 @@
                             <hr>
                             <div class="card-body">
                                 <p>
-                                By: <img src="https://gravatar.com/avatar/{{ post['author'].email_hash }}?d=retro&s=40" alt=""> <strong><em>{{ post["author"].username }}</em></strong>
+                                By:
+                                <a href="{{ url_for('get_profile', user_id=post['author_id']) }}">
+                                    <img src="{{ post['author'].profile_pic }}" alt=""> <strong><em>{{ post["author"].username }}</em></strong>
+                                </a>
                                 <br>
                                 {{ post["subtitle"] }}
                                 </p>

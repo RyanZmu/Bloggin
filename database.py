@@ -17,7 +17,9 @@ class User(db.Model, UserMixin):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     email_hash: Mapped[str] = mapped_column(String(255), unique=True)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
-    username: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    username: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
+    profile_pic: Mapped[str] = mapped_column(String[255], nullable=True)
+    user_bio: Mapped[str] = mapped_column(String[255], nullable=True)
     # This will act like a List of BlogPost objects attached to each User.
     # Every User class will have a posts list
     posts = relationship("BlogPosts", back_populates="author")
