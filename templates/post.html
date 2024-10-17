@@ -14,7 +14,11 @@
                 {{ post["date"] }}
                 <!-- Add SAFE to render ckeditor body -->
                 <br>
-                Posted By: <img src="{{ post['author'].profile_pic }}" alt="user_avatar"> <em>{{ post["author"].username }}</em>
+                Posted By:
+                    <a href="{{ url_for('get_profile', user_id=post['author_id']) }}" style="text-decoration:none">
+                        <img src="{{ post['author'].profile_pic }}" alt="profile picture">
+                    </a>
+                    <strong><em>{{ post["author"].username }}</em></strong>
                 </p>
                 <div class="mt-5">
                     {{ post["body"] | safe }}
@@ -39,7 +43,9 @@
                 {% for comment in post["post_comments"] %}
                 <div class="col-4 m-3 d-flex flex-column justify-contents-center align-items-center border border-success-subtle comment">
                     <p>
-                        <img src="{{ comment['author'].profile_pic }}" alt="">
+                    <a href="{{ url_for('get_profile', user_id=comment['author_id']) }}" style="text-decoration:none">
+                        <img src="{{ comment['author'].profile_pic }}" alt="profile picture">
+                    </a>
                         <strong>{{ comment["author"].username }}</strong>
                     </p>
                     {{ comment["comment_body"] | safe }}
