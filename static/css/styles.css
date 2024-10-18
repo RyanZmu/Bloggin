@@ -9,12 +9,6 @@ body {
   font-style: normal;
 }
 
-
-.card-image {
-    width: 20vw;
-    height: 30vh;
-}
-
 nav {
     background-color: #379777 !important;
 }
@@ -26,8 +20,6 @@ nav {
 .post {
     background-color: #d3d3d3 !important;
     color: black !important;
-/*    max-height: 30vh;*/
-/*    min-height: 30vh;*/
 }
 
 .post a {
@@ -37,6 +29,11 @@ nav {
 
 .post-image {
     max-height:50vh;
+    object-fit: contain;
+}
+
+.post-image-thumbnail {
+    max-height:25vh;
     object-fit: contain;
 }
 
@@ -98,3 +95,9 @@ footer {
 .news-header, .weather-header {
     color: white;
 }
+
+
+/*.profile_image {*/
+/*    max-height:10vh;*/
+/*    object-fit: contain;*/
+/*}*/

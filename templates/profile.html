@@ -7,51 +7,67 @@
   <div class="row">
     <div class="col-4 profile-column">
       <div class="card">
-        <img src={{user.profile_pic}} alt="profile picture" class="card-image">
+        <!--Check if profile_pic is gravatar image, make it larger as db profile_pic is small -->
+          {% if 'gravatar' is in user.profile_pic %}
+            <img src="https://gravatar.com/avatar/{{user.email_hash}}?d=retro&s=600" alt="profile picture" class="card-image w-100 p-2 object-fit-cover">
+          {% else %}
+            <img src={{user.profile_pic}} alt="profile picture" class="card-image w-100 p-2 object-fit-cover">
+          {% endif %}
         <h3 class="card-title"> {{ user.username }} </h3>
         <p class="card-body">
-            Email: {{ user.email }} <br>
+            <!--Show user email if current user is on their own profile page-->
+            {% if current_user.id == user.id %} Email: {{ user.email }} {% endif %} <br>
             Post Count: {{ post_count }} <br>
             User Bio: {{ user.user_bio }} <br>
         </p>
       </div>
       <br>
 
+    <!--Show User Options if current user is on their own profile-->
+    {% if current_user.id == user.id %}
       <ul class="list-group">
-        {% if current_user.is_authenticated and current_user.id == user.id %}
-        {{ render_form(bio_form) }}
-<!--        <li class="list-group-item btn">Edit Bio</li>-->
-        {% endif %}
         <li class="list-group-item btn">Upload Profile Photo (coming soon)</li>
-        <li class="list-group-item btn">Change Email (coming soon)</li>
-        <li class="list-group-item btn">Change Username (coming soon)</li>
+        <li class="list-group-item btn">
+            <a href="{{ url_for('edit_profile', user_id=user.id) }}" style="text-decoration: none; color:black;">
+            Change Email and/or Username <span style="color: red;">(NEW!)</span></a>
+        </li>
         <li class="list-group-item btn">Delete Account (coming soon)</li>
       </ul>
+    {% endif %}
     </div>
 
+    <!--user posts go here-->
     <div class="col posts-column">
-      <!--user posts go here-->
-      {% for post in user_posts %}
-        <div class="card post d-flex flex-row align-items-center justify-content-evenly p-3 mt-3 mb-3">
-            <img class="w-25" src="{{ post['img_url'] }}">
-            <div class="col p-3 d-flex flex-column">
-            <a href="{{ url_for('get_blog_post', post_id=post['id']) }}">
-                <h1 class="card-title"><strong>{{ post["title"] }}</strong></h1>
-            </a>
-                <hr>
-                <div class="card-body">
-                    <p>
-                    By: <img src="{{ post['author'].profile_pic }}" alt=""> <strong><em>{{ post["author"].username }}</em></strong>
-                    <br>
-                    {{ post["subtitle"] }}
-                    </p>
+        {% if user_posts | length >= 1 %}
+          {% for post in user_posts %}
+            <div class="card post d-flex flex-row align-items-center justify-content-evenly p-3 mt-3 mb-3">
+                <img class="w-25" src="{{ post['img_url'] }}">
+                <div class="col p-3 d-flex flex-column">
+                <a href="{{ url_for('get_blog_post', post_id=post['id']) }}">
+                    <h1 class="card-title"><strong>{{ post["title"] }}</strong></h1>
+                </a>
+                    <hr>
+                    <div class="card-body">
+                        <p>
+                        By: <img src="{{ post['author'].profile_pic }}" alt=""> <strong><em>{{ post["author"].username }}</em></strong>
+                        <br>
+                        {{ post["subtitle"] }}
+                        </p>
+                    </div>
                 </div>
+                    {% if current_user.is_authenticated and current_user.id == post["author_id"] or current_user.id == 1%}
+                        <a class="btn bg-danger text-white" href="{{ url_for('delete_post', post_id=post['id']) }}">Delete</a>
+                    {% endif %}
             </div>
-                {% if current_user.is_authenticated and current_user.id == post["author_id"] or current_user.id == 1%}
-                    <a class="btn bg-danger text-white" href="{{ url_for('delete_post', post_id=post['id']) }}">Delete</a>
+              {% endfor %}
+        {% else %}
+            <div class="card">
+                <p class="card-body"> No Posts Yet!</p>
+                {% if current_user.is_authenticated and current_user.id == user.id %}
+                    <a href="{{ url_for('new_post') }}" class="btn create-post">Create New Post</a>
                 {% endif %}
-        </div>
-      {% endfor %}
+            </div>
+        {% endif %}
     </div>
   </div>
 </div>
