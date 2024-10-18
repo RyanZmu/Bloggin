@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container profile-details-container flex-column align-content-center">
   <div class="row">
-    <div class="col-4 profile-column">
+    <div class="col-lg-4 col-md-4 col-sm-12 profile-column">
       <div class="card">
         <!--Check if profile_pic is gravatar image, make it larger as db profile_pic is small -->
           {% if 'gravatar' is in user.profile_pic %}
@@ -37,7 +37,7 @@
     </div>
 
     <!--user posts go here-->
-    <div class="col posts-column">
+    <div class="col-lg-8 col-md-8 col-sm-12 posts-column">
         {% if user_posts | length >= 1 %}
           {% for post in user_posts %}
             <div class="card post d-flex flex-row align-items-center justify-content-evenly p-3 mt-3 mb-3">
