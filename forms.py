@@ -34,6 +34,11 @@ class BioForm(FlaskForm):
     bio = CKEditorField(label="Edit Bio", validators=[DataRequired()])
     submit = SubmitField(label="Submit!", render_kw={'btn-primary': 'True'})
 
+class ProfileEdit(FlaskForm):
+    new_email = StringField(label='Email', validators=[Email()])
+    new_username = StringField(label="Username", validators=[])
+    submit = SubmitField(label="Submit!", render_kw={'btn-primary': 'True'})
+
 class ContactForm(FlaskForm):
     name = StringField(label="Name", validators=[DataRequired()])
     email = StringField(label='Email', validators=[DataRequired(), Email()])

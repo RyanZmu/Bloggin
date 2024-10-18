@@ -6,6 +6,8 @@ from typing import List
 from datetime import datetime, timedelta
 
 import geocoder
+import sqlalchemy.exc
+from bs4.diagnose import profile
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap5
 from dotenv import load_dotenv
@@ -15,9 +17,10 @@ from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 from flask_ckeditor import CKEditor
 from jwt.utils import force_bytes
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, LoginManager, login_required, current_user, logout_user
-from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm, LocationSubmit, BioForm
+from forms import NewPost, LoginForm, RegisterForm, CommentForm, ContactForm, LocationSubmit, BioForm, ProfileEdit
 from database import db, User, BlogPosts, Comment
 import requests
 from random import randint
@@ -349,12 +352,6 @@ def register_user():
             flash("User exists with this email!")
         else:
             login_user(new_user)
-            # Give User a profile pic
-            # new_user.profile_pic = "https://gravatar.com/avatar/{{ new_user.email_hash }}?d=retro&s=40"
-
-            # Wait 2 seconds, show success message and then redirect to home
-            # flash("Welcome!")
-            # time.sleep(2)
             return redirect(url_for("get_blog"))
 
     return render_template(template_name_or_list="forms.html", form=form)
@@ -370,21 +367,66 @@ def get_profile(user_id):
     # print(user_posts)
     post_count = len(user_posts)
 
-    # User options
-    # Set bio
-    bio_form = BioForm()
-
-    if bio_form.validate_on_submit():
-        user_requested.user_bio = bio_form.data.get("bio")
-        db.session.commit()
+    # # User options
+    # # Set bio
+    # bio_form = BioForm()
+    #
+    # if bio_form.validate_on_submit():
+    #     user_requested.user_bio = bio_form.data.get("bio")
+    #     db.session.commit()
 
 
     return render_template("profile.html",
                            user=user_requested,
                            user_posts=user_posts,
                            post_count=post_count,
-                           bio_form=bio_form
+                           # bio_form=bio_form
                            )
+
+@app.route(rule="/profile/<user_id>/edit-profile", methods=["POST", "GET"])
+@login_required
+def edit_profile(user_id):
+    # user_requested = db.session.execute(db.select(User).where(User.id == user_id)).scalar()
+
+    if current_user.is_authenticated and current_user.id == int(user_id):
+        # User options
+        # Set bio
+        # bio_form = BioForm()
+        profile_edit = ProfileEdit()
+
+        if profile_edit.validate_on_submit():
+            try:
+                user_requested = db.session.execute(db.select(User).where(User.id == user_id)).scalar()
+
+                if profile_edit.data.get("new_email") != "":
+                    updated_email = profile_edit.data.get("new_email")
+                    user_requested.email = updated_email
+                    db.session.commit()
+                else:
+                    flash("Invalid email!")
+
+                if profile_edit.data.get("new_username") != "" and profile_edit.data.get("new_username"):
+                    # TODO: Make a list of banned usernames like administrator,owner,etc. (add roles to users later)
+                    updated_username = profile_edit.data.get("new_username")
+                    user_requested.username = updated_username
+                    db.session.commit()
+                else:
+                    flash("Invalid username!")
+
+            except exc.IntegrityError:
+                flash("Username or email already taken!")
+                # Add rollback for if db entry fails
+                db.session.rollback()
+                redirect(url_for("edit_profile", user_id=user_id))
+            else:
+                flash("User info changed successfully")
+                return redirect(url_for("get_profile", user_id=user_id))
+
+        return render_template("forms.html", form=profile_edit)
+    else:
+        return redirect(url_for("get_blog"))
+
+
 
 
 # Misc routes
